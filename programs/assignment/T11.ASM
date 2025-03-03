@@ -1,0 +1,113 @@
+.MODEL SMALL
+.STACK 64
+
+.DATA
+TAB DB 10, 20, 30, 55, 60, 175, 88, 250, 99, 120
+; TAB DW 10 DUP(20)
+SUM DW 0
+INP DB "ENTER A STRING: $"
+COUNT DW 0
+LEN DW 0
+ATAB DB 45 DUP('$')
+
+.CODE
+MAIN PROC FAR
+    MOV AX, @DATA
+    MOV DS, AX
+
+    XOR AX,AX
+    XOR BX,BX
+    XOR SI, SI
+
+    LP1: 
+        MOV AL, TAB[SI]
+        CALL S_ASCII
+        INC SI
+        CMP SI, 10D 
+        JNE LP1
+
+    ; MOV DX, OFFSET ATAB
+    ; MOV AH, 09H
+    ; INT 21H
+
+    XOR BX, BX
+    XOR AX, AX 
+
+    LP2:
+        MOV AH, 00H
+        MOV AL, ATAB[BX]
+        CMP AL, '$'
+        JE OLP
+        INC BX
+        CALL DISP_DEC
+        JMP LP2
+    
+    OLP:
+    MOV AX, 4C00H
+    INT 21H
+MAIN ENDP
+
+
+S_ASCII PROC
+XOR CX,CX
+OL:
+XOR DX,DX
+L1:
+CMP AX,  10D
+JB LESS
+SUB AX, 10D
+INC DX
+JMP L1
+
+LESS:
+ADD AX, 30H
+PUSH AX
+MOV AX, DX
+INC CX
+CMP AX, 00H
+JNE OL
+
+L2:
+    POP DX
+    MOV ATAB[BX], DL
+    INC BX 
+    LOOP L2
+
+; MOV ATAB[BX], ','
+; INC BX 
+; MOV ATAB[BX], ' '
+; INC BX 
+RET
+S_ASCII ENDP
+
+DISP_DEC PROC
+XOR CX,CX
+OLL:
+XOR DX,DX
+LL1:
+CMP AX,  10D
+JB LLESS
+SUB AX, 10D
+INC DX
+JMP LL1
+
+LLESS:
+PUSH AX
+MOV AX, DX
+INC CX
+CMP AX, 00H
+JNE OLL
+
+LL2:
+    POP DX
+    ADD DX, 30H
+    MOV AH, 02H
+    INT 21H
+    LOOP LL2
+MOV DL, ' '
+MOV AH, 02H
+INT 21H
+RET
+DISP_DEC ENDP
+
+END MAIN

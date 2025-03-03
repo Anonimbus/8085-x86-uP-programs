@@ -1,0 +1,44 @@
+.MODEL SMALL
+.STACK 64
+
+.DATA
+    ROW DB 10
+    COL DB 20
+    VAL DB 2
+    INP DB "ENTER A STRING: $"
+    MAXC DB 100
+    ACTC DB ?
+    STRING DB 101 DUP('$')
+    NEW DB 0D, 0AH, '$'
+
+.CODE
+MAIN PROC FAR
+    MOV AX, @DATA
+    MOV DS, AX
+
+    MOV DX, OFFSET INP
+    MOV AH, 09H
+    INT 21H
+
+    MOV DX, OFFSET MAXC
+    MOV AH, 0AH
+    INT 21H
+
+    MOV AX, 0003H
+    INT 10H
+
+    MOV DH, ROW
+    MOV DL, COL 
+    MOV BH, 00H 
+    MOV AH, 02H
+    INT 10H 
+
+    MOV DX, OFFSET STRING
+    MOV AH, 09H
+    INT 21H
+
+    MOV AX, 4C00H
+    INT 21H
+
+MAIN ENDP
+END MAIN
