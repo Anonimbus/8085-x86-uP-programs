@@ -1,0 +1,56 @@
+.MODEL SMALL
+.STACK 100H
+.DATA
+	MSG DB "Enter a string:$"
+;	STRING DB 60, 0, 60 DUP ('$')
+	Buffer DB 4 DUP ('$')
+	Result DW ?
+.CODE
+MAIN PROC
+	MOV AX, @DATA
+	MOV DS, AX
+
+	MOV AX, 0100H	;for input function of 21h called in INP_STRING
+	XOR SI,SI ;making 0000h
+	CALL INP_STRING
+	
+	CALL PRINT_NUMBER
+
+	CALL RETURN
+	;START WRITING FROM HERE
+
+MAIN ENDP
+
+INP_STRING PROC
+LOOP_1:
+	INT 21H
+	CMP AL, 0DH
+	JE SKIP_INPUT
+	; SUB AL, '0' ;converting ascii to binary number: equivalent to SUB 30H
+	; PUSH AX ;      _01_INP_
+	MOV Buffer[SI], AL
+	
+	INC SI
+	CMP SI, 3
+	JNE LOOP_1
+SKIP_INPUT:
+	RET
+INP_STRING ENDP
+
+
+PRINT_NUMBER PROC
+	LEA DX, Buffer
+	MOV AH, 09H
+	INT 21H
+
+	RET
+PRINT_NUMBER ENDP
+
+
+RETURN PROC
+	MOV AX, 4C00H
+	INT 21H
+RETURN ENDP
+
+
+END MAIN

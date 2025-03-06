@@ -3,7 +3,7 @@
 
 .DATA
     MSG DB "Programming in Assembly Language is Fun$" ; String to display
-    REVERSE_ATTR DB 70h ; Reverse video color attribute (black background, white text)
+    REVERSE_ATTR DB F0h ; Reverse video color attribute (white text, black background )
 
 .CODE
 START:
